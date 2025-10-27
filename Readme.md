@@ -136,7 +136,15 @@ pnpm run preview
 
 ```powershell
 # 在生产上通常使用--workers 并配合进程管理器（如 systemd 或 supervisor）
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+uvicorn app.main:app --port 8000 --workers 4
+```
+ - Windows上可使用 winloop 提升性能
+```powershell
+uvicorn app.main:app --port 8000 --workers 4 --http httptools --ws websockets-sansio --loop winloop:new_event_loop
+```
+ - Linux上使用uvloop
+```bash
+uvicorn app.main:app --port 8000 --workers 4 --http httptools --ws websockets-sansio --loop uvloop
 ```
 
 ## 配置与注意事项

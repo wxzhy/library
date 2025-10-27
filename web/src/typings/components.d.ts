@@ -135,6 +135,9 @@ declare module 'vue' {
     WaveBg: typeof import('./../components/custom/wave-bg.vue')['default']
     WebSiteLink: typeof import('./../components/custom/web-site-link.vue')['default']
   }
+  export interface GlobalDirectives {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
+  }
 }
 
 // For TSX support
