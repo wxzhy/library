@@ -13,10 +13,12 @@ DB_CONFIG = {
 
 pool: aiomysql.Pool = None
 
+
 async def get_pool():
     if pool is None:
         raise RuntimeError("数据库连接池未初始化")
     return pool
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,4 +29,3 @@ async def lifespan(app: FastAPI):
     pool.close()
     await pool.wait_closed()
     print("数据库连接池已关闭")
-
