@@ -7,14 +7,14 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 
-from app.dependencies import (
+from ..dependencies import (
     get_conn,
     get_user_by_username,
     get_current_user_dependency,
     oauth2_scheme,
 )
-from app.routers import borrows
-from app.security import (
+from . import borrows
+from ..security import (
     create_access_token,
     create_refresh_token,
     SECRET_KEY,
@@ -66,13 +66,14 @@ class Refresh(BaseModel):
     token_type: str = "bearer"
     expires_in: int = 3600
 
+
 class StatisticsResponse(BaseModel):
     books: int
     users: int
     borrows: int
     total_borrows: int
-    
-    
+
+
 # 登录接口 - 支持JSON格式请求
 @router.post("/auth/login", response_model=LoginResponse)
 async def login(
@@ -154,7 +155,9 @@ async def get_user_info(
             detail=f"获取用户信息失败: {str(e)}",
         )
 
+
 # 更新用户信息
+
 
 # 刷新token
 @router.post("/auth/refresh-token", response_model=LoginResponse)
@@ -256,4 +259,3 @@ async def refresh_token_legacy(
     refresh_data = RefreshTokenRequest(refreshToken=token)
     result = await refresh_token(refresh_data, conn)
     return JSONResponse(content=jsonable_encoder(result))
-

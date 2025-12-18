@@ -1,10 +1,10 @@
 from typing import AsyncGenerator
 from aiomysql import Connection, DictCursor
-from app.database import get_pool
+from .database import get_pool
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from app.security import create_access_token, create_refresh_token, SECRET_KEY, ALGORITHM
+from .security import create_access_token, create_refresh_token, SECRET_KEY, ALGORITHM
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
@@ -24,6 +24,7 @@ async def get_user_by_username(conn, username: str) -> dict:
         )
         return await cur.fetchone()
 
+
 async def get_current_user(conn, user_id: int) -> dict:
     async with conn.cursor(DictCursor) as cur:
         await cur.execute(
@@ -36,7 +37,7 @@ async def get_current_user(conn, user_id: int) -> dict:
 # 用户认证依赖函数 - 移到前面定义
 async def get_current_user_dependency(
     token: str = Depends(oauth2_scheme),
-    conn = Depends(get_conn),
+    conn=Depends(get_conn),
 ) -> dict:
     """获取当前用户依赖函数"""
     try:
@@ -50,7 +51,7 @@ async def get_current_user_dependency(
                 detail="无效的访问令牌",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-            
+
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -63,13 +64,11 @@ async def get_current_user_dependency(
             detail="无效的访问令牌",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     user = await get_user_by_username(conn, userName)
     if not user or not user.get("is_active", True):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="用户不存在或已被禁用"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="用户不存在或已被禁用"
         )
-    
-    return user
 
+    return user
